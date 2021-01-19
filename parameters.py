@@ -6,8 +6,8 @@ trainDataFileName = 'trainData'
 testDataFileName = 'testData'
 char2idFileName = 'char2id'
 
-#device = torch.device("cuda:0")
-device = torch.device("cpu")
+device = torch.device("cuda:0")
+#device = torch.device("cpu")
 
 batchSize = 32
 char_emb_size = 32
