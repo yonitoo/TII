@@ -42,40 +42,27 @@ class LSTMLanguageModelPack(torch.nn.Module):
         self.padTokenIdx = word2ind[padToken]
         self.endTokenIdx = word2ind[endToken]
         self.hidden_size = hidden_size
-        self.lstm        = torch.nn.LSTM(embed_size, hidden_size, lstm_layers, bidirectional = True, dropout = dropout)
+        self.lstm        = torch.nn.LSTM(embed_size, hidden_size, lstm_layers, dropout = dropout)
         self.embed       = torch.nn.Embedding(len(word2ind), embed_size)
-        self.projection  = torch.nn.Linear(2 * hidden_size, len(word2ind))
+        self.projection  = torch.nn.Linear(hidden_size, len(word2ind))
         self.dropout     = torch.nn.Dropout(dropout)
 
         #### Край на Вашия код
         #############################################################################
-
+    
     def forward(self, source):
-        #############################################################################
-        ###  Тук следва да се имплементира forward метода на обекта
-        ###  За целта може да копирате съответния метод от програмата за упр. 13
-        ###  като направите добавка за dropout
-        #############################################################################
-        #### Начало на Вашия код.
-
-        batch_size = len(source)
         X = self.preparePaddedBatch(source)
-        E = self.embed(X)
-        
-        source_lengths = [len(s) for s in source]
-        m = X.shape[0]
+        E = self.embed(X[:-1])
+        source_lengths = [len(s)-1 for s in source]
         outputPacked, _ = self.lstm(torch.nn.utils.rnn.pack_padded_sequence(E, source_lengths,enforce_sorted=False))
-        
         output,_ = torch.nn.utils.rnn.pad_packed_sequence(outputPacked)
-        output = output.view(m, batch_size, 2, self.hidden_size)
-        t = torch.cat((output[:-2,:,0,:], output[2:,:,1,:]),2)
-        Z = self.projection(self.dropout(t.flatten(0,1)))
 
-        Y_bar = X[1:-1].flatten(0,1)
+        Z = self.projection(self.dropout(output.flatten(0,1)))
+        Y_bar = X[1:].flatten(0,1)
         Y_bar[Y_bar==self.endTokenIdx] = self.padTokenIdx
         H = torch.nn.functional.cross_entropy(Z,Y_bar,ignore_index=self.padTokenIdx)
         return H
-    
+
         #### Край на Вашия код
         #############################################################################
 

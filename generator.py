@@ -30,8 +30,7 @@ def generateText(model, char2id, startSentence, limit=1000, temperature=1.):
 
     while not t == '}' and sz <= limit :
         #p = softmax(Z/temperature), Z = projection u13 : 490 sigmoid = softmax?
-        #
-        #t = np.random.choice(P(t|result)) 
+        t = np.random.choice(P(t|result)) 
         result = result + t
         sz = sz + 1
 
