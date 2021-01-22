@@ -14,9 +14,9 @@ char_emb_size = 32
 
 hid_size = 512
 lstm_layers = 2
-dropout = 0.75
+dropout = 0.5
 
-epochs = 3
+epochs = 4
 learning_rate = 0.005
 
 defaultTemperature = 0.4
