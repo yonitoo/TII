@@ -17,6 +17,6 @@ lstm_layers = 2
 dropout = 0.5
 
 epochs = 5
-learning_rate = 0.007
+learning_rate = 0.005
 
 defaultTemperature = 0.4
