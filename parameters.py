@@ -16,7 +16,7 @@ hid_size = 512
 lstm_layers = 2
 dropout = 0.1
 
-epochs = 4
+epochs = 6
 learning_rate = 0.005
 
 defaultTemperature = 0.4
