@@ -20,11 +20,11 @@ def generateText(model, char2id, startSentence, limit=300, temperature=0.7):
     
     #result = startSentence[1:]
     int2char = dict(enumerate(char2id))
-    def char_tensor (model, string):
-        tensor = torch.zeros(len(string)).long()
-        for c in range (len(string)):
-            tensor[c] = char2id[string[c]]
-            return tensor
+    #def char_tensor (model, string):
+       # tensor = torch.zeros(len(string)).long()
+      #  for c in range (len(string)):
+     #       tensor[c] = char2id[string[c]]
+    #        return tensor
 
     def predict(model, source, h=None):
         
@@ -69,6 +69,7 @@ def generateText(model, char2id, startSentence, limit=300, temperature=0.7):
     #print(char2id)
     startSentence+=" "
     result = startSentence[1:]
+    print(result)
     startSentenceLen = len(result)
     chars  = [x for x in result]
     out, h = predict(model,chars)
