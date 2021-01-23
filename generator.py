@@ -11,7 +11,7 @@
 import numpy as np
 import torch
 
-def generateText(model, char2id, startSentence, limit=300, temperature=0.4):
+def generateText(model, char2id, startSentence, limit=300, temperature=0.8):
     # model е инстанция на обучен LSTMLanguageModelPack обект
     # char2id е речник за символите, връщащ съответните индекси
     # startSentence е началния низ стартиращ със символа за начало '{'
