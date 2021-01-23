@@ -46,7 +46,7 @@ def generateText(model, char2id, startSentence, limit=1000, temperature=1.):
         #print(Z)
         #Z = torch.div(Z,0.2)
         #print(Z)
-        p = torch.nn.functional.softmax(Z/temperature, dim=1)
+        p = torch.nn.functional.softmax(Z/temperature, dim=1).data
         #print(p)
         p, top_ch = p.topk(32)
         top_ch = top_ch.numpy().squeeze()
