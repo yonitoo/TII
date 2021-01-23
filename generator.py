@@ -28,7 +28,7 @@ def generateText(model, char2id, startSentence, limit=1000, temperature=1.):
 
     def predict(model, source, h=None):
         
-        length = len(source)-1
+        length = len(source)
         X = model.preparePaddedBatch(source)
         #   print(X)
         E = model.embed(X)
