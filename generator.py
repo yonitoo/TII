@@ -31,8 +31,8 @@ def generateText(model, char2id, startSentence, limit=1000, temperature=1.):
         length = len(source)-1
         X = model.preparePaddedBatch(source)
         #   print(X)
-        E = model.embed(X[:-1])
-        source_lengths = [len(s)-1 for s in source]
+        E = model.embed(X)
+        source_lengths = [len(s) for s in source]
        # print(E)
         #print(source_lengths)
         if h!=None:
@@ -41,10 +41,10 @@ def generateText(model, char2id, startSentence, limit=1000, temperature=1.):
             outputPacked, h = model.lstm(torch.nn.utils.rnn.pack_padded_sequence(E, source_lengths,enforce_sorted=False))
         output,_ = torch.nn.utils.rnn.pad_packed_sequence(outputPacked)
 
-        Z = model.projection(model.dropout(output.flatten(0,1)))
+        Z = model.projection(output.flatten(0,1))
 
         #print(Z)
-        #Z = torch.div(Z,0.2)
+        Z = torch.div(Z,0.2)
         #print(Z)
         p = torch.nn.functional.softmax(Z/temperature, dim=1).data
         #print(p)
