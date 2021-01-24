@@ -65,7 +65,7 @@ def generateText(model, char2id, startSentence, limit = 500, temperature = 0.3):
     #-initWord:
     size = initWordSize
     while not output == '}' and size <= limit :
-        output, h = predict(model, poem[size + initWordSize], h)
+        output, h = predict(model, poem[size], h)
         poem.append(output)
         size = size + 1
 
