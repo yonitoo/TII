@@ -50,7 +50,7 @@ def generateText(model, char2id, startSentence, limit = 500, temperature = 0.3):
     #Ако е въведена - добавяме отстояние след нея
     #Иначе генерираме случайна главна буква, с която да започнем
     if(len(startSentence) == 1):
-        capitalLetters = list(char2id.keys())[51:79]
+        capitalLetters = list(char2id.keys()[51:79])
         startSentence += np.random.choice(capitalLetters)
     else:
         startSentence += " "
