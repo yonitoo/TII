@@ -39,7 +39,10 @@ def generateText(model, char2id, startSentence, limit = 300, temperature = 0.7):
         topChar = topChar.numpy().squeeze()
         p = p[length]
         p = p.numpy().squeeze()
-        t = np.random.choice(topChar[length], p=p / p.sum())
+        if type(topChar[length]) is np.ndarray:
+            t = np.random.choice(topChar[length], p = p / p.sum())
+        else:
+            t = np.random.choice(topChar, p = p / p.sum())
         return id2char[t],h 
 
     if(len(startSentence)==1):
@@ -55,12 +58,12 @@ def generateText(model, char2id, startSentence, limit = 300, temperature = 0.7):
     output, h = predict(model, chars)
     chars.append(output)
     model.eval()
-    for x in range(limit):
+    for i in range(limit):
         output, h = predict(model, chars[-startSentenceLen:], h)
         chars.append(output)
 
-    for x in chars:
-        result += x
+    for ch in chars:
+        result += ch
 
     #t = result[0]
     #sz = 0
