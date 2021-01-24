@@ -45,21 +45,21 @@ def generateText(model, char2id, startSentence, limit = 300, temperature = 0.7):
         return id2char[t], h 
 
     if(len(startSentence) == 1):
-        keys = list(char2id.keys())
-        capitalLetters = keys[51:79]
+        symbols = list(char2id.keys())
+        capitalLetters = symbols[51:79]
         startSentence += np.random.choice(capitalLetters)
     else:
         startSentence += " "
     result = startSentence[1:]
-    startSentenceLen = len(result)
+    initWord = len(result)
     chars  = [x for x in result]
     result = ""
     output, h = predict(model, chars)
     chars.append(output)
     model.eval()
-    #-startSentenceLen:
+    #-initWord:
     for i in range(limit):
-        output, h = predict(model, chars[i + startSentenceLen], h)
+        output, h = predict(model, chars[i + initWord], h)
         chars.append(output)
 
     for ch in chars:
