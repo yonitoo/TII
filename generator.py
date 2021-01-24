@@ -42,18 +42,22 @@ def generateText(model, char2id, startSentence, limit = 300, temperature = 0.7):
         t = np.random.choice(topChar[length], p=p / p.sum())
         return id2char[t],h 
 
-    startSentence += " "
-    print("here")
+    if(len(startSentence)==1):
+        keys = list(char2id.keys())
+        glavniBukvi = keys[51:79]
+        startSentence+= np.random.choice(glavniBukvi)
+    else:
+        startSentence += " "
     result = startSentence[1:]
     startSentenceLen = len(result)
     chars  = [x for x in result]
     result = ""
-    out, h = predict(model, chars)
-    chars.append(out)
+    output, h = predict(model, chars)
+    chars.append(output)
     model.eval()
     for x in range(limit):
-        out, h = predict(model, chars[-startSentenceLen:], h)
-        chars.append(out)
+        output, h = predict(model, chars[-startSentenceLen:], h)
+        chars.append(output)
 
     for x in chars:
         result += x
