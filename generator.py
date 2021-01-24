@@ -11,15 +11,14 @@
 import numpy as np
 import torch
 
-def generateText(model, char2id, startSentence, limit=300, temperature=0.7):
+def generateText(model, char2id, startSentence, limit = 300, temperature = 0.7):
     # model е инстанция на обучен LSTMLanguageModelPack обект
     # char2id е речник за символите, връщащ съответните индекси
     # startSentence е началния низ стартиращ със символа за начало '{'
     # limit е горна граница за дължината на поемата
     # temperature е температурата за промяна на разпределението за следващ символ
     
-    #result = startSentence[1:]
-    int2char = dict(enumerate(char2id))
+    id2char = dict(enumerate(char2id))
 
     def predict(model, source, h=None):
         
@@ -29,9 +28,9 @@ def generateText(model, char2id, startSentence, limit=300, temperature=0.7):
         source_lengths = [len(s) for s in source]
 
         if h!=None:
-            outputPacked, h = model.lstm(torch.nn.utils.rnn.pack_padded_sequence(E, source_lengths,enforce_sorted=False), h)
+            outputPacked, h = model.lstm(torch.nn.utils.rnn.pack_padded_sequence(E, source_lengths, enforce_sorted = False), h)
         else:
-            outputPacked, h = model.lstm(torch.nn.utils.rnn.pack_padded_sequence(E, source_lengths,enforce_sorted=False))
+            outputPacked, h = model.lstm(torch.nn.utils.rnn.pack_padded_sequence(E, source_lengths, enforce_sorted = False))
         output,_ = torch.nn.utils.rnn.pad_packed_sequence(outputPacked)
 
         Z = model.projection(model.dropout(output.flatten(0,1)))
@@ -40,27 +39,24 @@ def generateText(model, char2id, startSentence, limit=300, temperature=0.7):
         topChar = topChar.numpy().squeeze()
         p = p[length]
         p = p.numpy().squeeze()
-        t = np.random.choice(topChar[length], p=p/p.sum())
-        return int2char[t],h 
+        t = np.random.choice(topChar[length], p=p / p.sum())
+        return id2char[t],h 
 
-    startSentence+=" "
+    startSentence += " "
     print("here")
     result = startSentence[1:]
-    print(result)
     startSentenceLen = len(result)
+    result = ""
     chars  = [x for x in result]
-    out, h = predict(model,chars)
+    out, h = predict(model, chars)
     chars.append(out)
     model.eval()
     for x in range(limit):
-        out, h = predict(model, chars[-startSentenceLen:],h)
+        out, h = predict(model, chars[-startSentenceLen:], h)
         chars.append(out)
-    return "".join(chars)
 
-    #############################################################################
-    ###  Тук следва да се имплементира генерацията на текста
-    #############################################################################
-    #### Начало на Вашия код.
+    for x in chars:
+        result += x
 
     #t = result[0]
     #sz = 0
@@ -70,8 +66,5 @@ def generateText(model, char2id, startSentence, limit=300, temperature=0.7):
     #    t = np.random.choice(P(t|result)) 
     #    result = result + t
     #    sz = sz + 1
-    #
-    #### Край на Вашия код
-    #############################################################################
 
     return result
