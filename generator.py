@@ -22,7 +22,6 @@ def generateText(model, char2id, startSentence, limit = 300, temperature = 0.7):
 
     def predict(model, source, h=None):
         
-        length = len(source) - 1
         X = model.preparePaddedBatch(source)
         E = model.embed(X)
         source_lengths = [len(s) for s in source]
@@ -33,22 +32,22 @@ def generateText(model, char2id, startSentence, limit = 300, temperature = 0.7):
             outputPacked, h = model.lstm(torch.nn.utils.rnn.pack_padded_sequence(E, source_lengths, enforce_sorted = False))
         output,_ = torch.nn.utils.rnn.pad_packed_sequence(outputPacked)
 
-        Z = model.projection(model.dropout(output.flatten(0,1)))
-        p = torch.nn.functional.softmax(torch.div(Z, temperature), dim=1).data
+        Z = model.projection(model.dropout(output.flatten(0, 1)))
+        length = len(source) - 1
+        p = torch.nn.functional.softmax(torch.div(Z, temperature), dim = 1).data
         p, topChar = p.topk(32)
         topChar = topChar.numpy().squeeze()
-        p = p[length]
-        p = p.numpy().squeeze()
+        p = p[length].numpy().squeeze()
         if type(topChar[length]) is np.ndarray:
-            t = np.random.choice(topChar[length], p = p / p.sum())
+            t = np.random.choice(topChar[length], p = p / np.sum(p))
         else:
-            t = np.random.choice(topChar, p = p / p.sum())
-        return id2char[t],h 
+            t = np.random.choice(topChar, p = p / np.sum(p))
+        return id2char[t], h 
 
-    if(len(startSentence)==1):
+    if(len(startSentence) == 1):
         keys = list(char2id.keys())
-        glavniBukvi = keys[51:79]
-        startSentence+= np.random.choice(glavniBukvi)
+        capitalLetters = keys[51:79]
+        startSentence += np.random.choice(capitalLetters)
     else:
         startSentence += " "
     result = startSentence[1:]
