@@ -11,7 +11,7 @@
 import numpy as np
 import torch
 
-def generateText(model, char2id, startSentence, limit = 300, temperature = 0.7):
+def generateText(model, char2id, startSentence, limit = 500, temperature = 0.3):
     # model е инстанция на обучен LSTMLanguageModelPack обект
     # char2id е речник за символите, връщащ съответните индекси
     # startSentence е началния низ стартиращ със символа за начало '{'
@@ -20,13 +20,15 @@ def generateText(model, char2id, startSentence, limit = 300, temperature = 0.7):
     
     id2char = dict(enumerate(char2id))
 
+    #Правим функция, която да предсказва всяка следваща буква
+    #по подобие на фиг. 1, следвайки фиг. 2 от заданието
     def predict(model, source, h=None):
         
         X = model.preparePaddedBatch(source)
         E = model.embed(X)
         source_lengths = [len(s) for s in source]
 
-        if h!=None:
+        if h != None:
             outputPacked, h = model.lstm(torch.nn.utils.rnn.pack_padded_sequence(E, source_lengths, enforce_sorted = False), h)
         else:
             outputPacked, h = model.lstm(torch.nn.utils.rnn.pack_padded_sequence(E, source_lengths, enforce_sorted = False))
@@ -44,34 +46,31 @@ def generateText(model, char2id, startSentence, limit = 300, temperature = 0.7):
             t = np.random.choice(topChar, p = p / np.sum(p))
         return id2char[t], h 
 
+    #Проверяваме дали е въведена начална дума
+    #Ако е въведена - добавяме отстояние след нея
+    #Иначе генерираме случайна главна буква, с която да започнем
     if(len(startSentence) == 1):
-        symbols = list(char2id.keys())
-        capitalLetters = symbols[51:79]
+        capitalLetters = list(char2id.keys())[51:79]
         startSentence += np.random.choice(capitalLetters)
     else:
         startSentence += " "
     result = startSentence[1:]
-    initWord = len(result)
-    chars  = [x for x in result]
-    result = ""
-    output, h = predict(model, chars)
-    chars.append(output)
+    initWordSize = len(result)
+    #В променливата poem пазим текущото състояние на поемата
+    poem  = [x for x in result]
+    output, h = predict(model, poem)
+    poem.append(output)
     model.eval()
     #-initWord:
-    for i in range(limit):
-        output, h = predict(model, chars[i + initWord], h)
-        chars.append(output)
+    size = initWordSize
+    while not output == '}' and size <= limit :
+        output, h = predict(model, poem[size + initWordSize], h)
+        poem.append(output)
+        size = size + 1
 
-    for ch in chars:
+    #Зануляваме резултата и го пълним с генерираните символи от poem
+    result = ""
+    for ch in poem:
         result += ch
-
-    #t = result[0]
-    #sz = 0
-
-    #while not t == '}' and sz <= limit :
-    #    p = torch.nn.functional.softmax(Z/temperature), Z = projection
-    #    t = np.random.choice(P(t|result)) 
-    #    result = result + t
-    #    sz = sz + 1
 
     return result
