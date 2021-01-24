@@ -47,6 +47,7 @@ def generateText(model, char2id, startSentence, limit = 300, temperature = 0.7):
     result = startSentence[1:]
     startSentenceLen = len(result)
     chars  = [x for x in result]
+    result = ""
     out, h = predict(model, chars)
     chars.append(out)
     model.eval()
